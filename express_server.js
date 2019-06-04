@@ -1,6 +1,8 @@
 var express = require("express");
 var app = express();
-var PORT = 8080; // this is the default port
+var PORT = 8080;
+
+app.set("view enging", "ejs");
 
 var urlDatabase = {
     "b2xVn2": "http://www.lighthouselabs.ca",
