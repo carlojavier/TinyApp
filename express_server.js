@@ -7,8 +7,8 @@ var urlDatabase = {
     "9sm5xK": "http://www.google.com"
 };
 
-app.get("/urls.json", (require, response) => {
-    response.json(urlDatabase);
+app.get("/Dracarys", (require, response) => {
+    response.send("<html><body>Dracarys <b>World</b></body></html>\n");
 });
 
 app.listen(PORT, () => {
