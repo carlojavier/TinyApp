@@ -9,9 +9,15 @@ var urlDatabase = {
     "9sm5xK": "http://www.google.com"
 };
 
-app.get("/urls", (require, response) => {
+app.get("/urls", (request, response) => {
     let templateVars = { urls: urlDatabase };
     response.render("urls_index", templateVars);
+});
+
+app.get("/urls/:shortURL", (request, response) => {
+    const shortURL = request.params.shortURL
+    let templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL] };
+    response.render("urls_show", templateVars);
 });
 
 app.listen(PORT, () => {
