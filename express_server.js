@@ -24,7 +24,7 @@ app.get("/urls", (request, response) => {
 });
 
 // GET route to show the submission form
-app.get("/urls/:shortURL", (request, response) => {
+app.get("/u/:shortURL", (request, response) => {
     let longURL = request.params.shortURL
     response.redirect(urlDatabase[longURL]);
 });
