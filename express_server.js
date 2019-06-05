@@ -2,45 +2,49 @@ const express = require("express");
 const app = express();
 const PORT = 8080;
 const morgan = require('morgan');
+const bodyParser = require("body-parser");
 
+// set view engine to ejs
 app.set("view engine", "ejs");
-
 // set up morgan
 app.use(morgan('dev'));
+// set up middleware
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // set urlDatabase
 const urlDatabase = {
     "b2xVn2": "http://www.lighthouselabs.ca",
     "9sm5xK": "http://www.google.com"
 };
-// implement bodyParser
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: true }));
+
+// route to index
+app.get("/urls", (request, response) => {
+    const templateVars = { urls: urlDatabase };
+    response.render("urls_index", templateVars);
+});
+
+// GET route to show the submission form
+app.get("/urls/:shortURL", (request, response) => {
+    let longURL = request.params.shortURL
+    response.redirect(urlDatabase[longURL]);
+});
+
+// POST route to receive form
+app.post("/urls", (request, response) => {
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = request.body.longURL
+    response.redirect(`/urls/${shortURL}`);
+});
 
 app.get("/urls/new", (request, response) => {
     response.render("urls_new");
 });
 
+// GET route to render short URL
 app.get("/urls/:shortURL", (request, response) => {
     const shortURL = request.params.shortURL
     let templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL] };
     response.render("urls_show", templateVars);
-});
-
-app.get("/urls", (request, response) => {
-    let templateVars = { urls: urlDatabase };
-    response.render("urls_index", templateVars);
-});
-
-app.post("/urls", (request, response) => {
-    let shortURL = generateRandomString();
-    urlDatabase[shortURL] = request.body.longURL
-    response.redirect(`/urls/${shortURL}`);
-});
-
-app.get("/urls/:shortURL", (request, response) => {
-    let longURL = request.params.shortURL
-    response.redirect(urlDatabase[longURL]);
 });
 
 app.post("/urls/:shortURL/delete", (request, response) => {
