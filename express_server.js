@@ -1,14 +1,19 @@
 const express = require("express");
 const app = express();
 const PORT = 8080;
+const morgan = require('morgan');
 
 app.set("view engine", "ejs");
 
+// set up morgan
+app.use(morgan('dev'));
+
+// set urlDatabase
 const urlDatabase = {
     "b2xVn2": "http://www.lighthouselabs.ca",
     "9sm5xK": "http://www.google.com"
 };
-
+// implement bodyParser
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -33,9 +38,14 @@ app.post("/urls", (request, response) => {
     response.redirect(`/urls/${shortURL}`);
 });
 
-app.get("/u/:shortURL", (request, response) => {
+app.get("/urls/:shortURL", (request, response) => {
     let longURL = request.params.shortURL
     response.redirect(urlDatabase[longURL]);
+});
+
+app.post("/urls/:shortURL/delete", (request, response) => {
+    delete urlDatabase[request.params.longURL];
+    response.redirect('/urls');
 });
 
 app.listen(PORT, () => {
