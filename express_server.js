@@ -32,7 +32,7 @@ app.post("/urls", (request, response) => {
     console.log('hey there', request.body.longURL, shortURL)
     urlDatabase[shortURL] = request.body.longURL
     console.log(urlDatabase);
-    response.send("Ok");
+    response.redirect(`/urls/${shortURL}`);
 });
 
 app.listen(PORT, () => {
