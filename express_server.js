@@ -29,17 +29,13 @@ app.get("/urls", (request, response) => {
 
 app.post("/urls", (request, response) => {
     let shortURL = generateRandomString();
-    //    console.log('hey there', request.body.longURL, shortURL)
     urlDatabase[shortURL] = request.body.longURL
-    //    console.log(urlDatabase);
     response.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/u/:shortURL", (request, response) => {
-    // const longURL = ...
     let longURL = request.params.shortURL
     response.redirect(urlDatabase[longURL]);
-    // console.log(urlDatabase[longURL])
 });
 
 app.listen(PORT, () => {
