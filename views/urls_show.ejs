@@ -18,7 +18,10 @@
     <ul>
         <a href="#">
             <%= shortURL %>
-            <%= longURL %>
+            <form method="POST" action="/urls/9sm5xK/delete">
+                <%= longURL %>
+                <button type="button" class="btn btn-success">UPDATE</button>
+            </form>
         </a>
     </ul>
 </body>
