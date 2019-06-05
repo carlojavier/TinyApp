@@ -28,19 +28,21 @@ app.get("/urls", (request, response) => {
 });
 
 app.post("/urls", (request, response) => {
-    console.log(request.body); // Log the POST request body to the console
-    response.send("Ok"); // Respond with 'Ok' (we will replace this)
+    let shortURL = generateRandomString();
+    console.log('hey there', request.body.longURL, shortURL)
+    urlDatabase[shortURL] = request.body.longURL
+    console.log(urlDatabase);
+    response.send("Ok");
 });
 
 app.listen(PORT, () => {
     console.log(`Sample app listening on port ${PORT}!`);
 });
 
-function generateRandomString(length, chars) {
+function generateRandomString() {
+    const length = 5;
+    const chars = 'qwertyuioplkjhgfdsazxcvbnm0987654321ZXCVBNMLKJHGFDSAQWERTYUIOP';
     var result = '';
     for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
     return result;
 }
-
-var rString = generateRandomString(6, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-console.log(rString);
