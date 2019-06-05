@@ -14,16 +14,16 @@
 
 <body style="font-size:20px; padding:50px">
     <!-- THIS IS WHERE THE EJS CODE WILL GO -->
-    <h2>My URLs</h2>
-    <ul>
-        <a href="#">
-            <%= shortURL %>
-            <form method="POST" action="/urls/9sm5xK/delete">
-                <%= longURL %>
-                <button type="button" class="btn btn-success">UPDATE</button>
-            </form>
-        </a>
-    </ul>
+    <h1>My URLs</h1>
+    <h2>
+        <%= shortURL %>
+    </h2>
+    <form method="POST" action="/urls/9sm5xK/delete">
+        <label for="id">URL</label>
+        <input type="text" name="<%= longURL %>" id="id">
+        <button type="button" class="btn btn-warning">UPDATE</button>
+    </form>
+    </a>
 </body>
 
 </html>

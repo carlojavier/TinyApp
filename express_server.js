@@ -47,10 +47,22 @@ app.get("/urls/:shortURL", (request, response) => {
     response.render("urls_show", templateVars);
 });
 
+// another POST route to receive submit function
+app.post("urls/:shortURL/", (request, response) => {
+    const newURL = request.body.longURL;
+    const id = request.params.longURL;
+    if (newURL) {
+        urls[id] = newURL;
+    }
+    response.redirect(`/urls/${id}`);
+    console.log(newURL)
+});
+
 app.post("/urls/:shortURL/delete", (request, response) => {
     delete urlDatabase[request.params.longURL];
     response.redirect('/urls');
 });
+
 
 app.listen(PORT, () => {
     console.log(`Sample app listening on port ${PORT}!`);
