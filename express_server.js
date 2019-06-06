@@ -14,11 +14,68 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // set up cookie-parser
 app.use(cookieParser());
 
+function generateRandomString() {
+    const length = 5;
+    const chars = 'qwertyuioplkjhgfdsazxcvbnm0987654321ZXCVBNMLKJHGFDSAQWERTYUIOP';
+    var result = '';
+    for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
+}
+
+
 // set urlDatabase
 const urlDatabase = {
     "b2xVn2": "http://www.lighthouselabs.ca",
     "9sm5xK": "http://www.google.com"
 };
+
+const users = {
+    "userRandomID": {
+        id: "userRandomID",
+        email: "user@example.com",
+        password: "something-important-prob"
+    },
+
+    "alsoUserRandomID": {
+        id: "alsoUserRandomID",
+        email: "alsoUser@example.com",
+        password: "also-something-important-idk"
+    }
+}
+
+function doesEmailExistInDatabase(email) {
+    let exists = false
+    for (var key in users) {
+        if (email === users[key].email) {
+            exists = true
+        }
+    }
+    return exists
+}
+
+app.get("/register", (request, response) => {
+    const templateVars = {
+        urls: urlDatabase,
+        username: request.cookies.username
+    };
+    response.render("urls_register", templateVars);
+
+});
+
+app.post("/register", (request, response) => {
+    const newUserID = generateRandomString();
+    const newUser = {
+        id: newUserID,
+        email: request.body.email,
+        password: request.body.password
+    };
+    if (newUser.email === "" || newUser.password === "")
+        response.status(400).send("Not today");
+    if (doesEmailExistInDatabase(newUser.email));
+    response.status(400).send("Looks like you've been here before")
+    response.cookie("UserID", newUserID);
+    response.redirect("/urls");
+});
 
 // route to index
 app.get("/urls", (request, response) => {
@@ -75,6 +132,7 @@ app.post("/urls/:shortURL/delete", (request, response) => {
     response.redirect('/urls');
 });
 
+
 app.post("/login", (request, response) => {
     const name = request.body.username;
     response.cookie('username', name);
@@ -90,11 +148,3 @@ app.post("/logout", (request, response) => {
 app.listen(PORT, () => {
     console.log(`Sample app listening on port ${PORT}!`);
 });
-
-function generateRandomString() {
-    const length = 5;
-    const chars = 'qwertyuioplkjhgfdsazxcvbnm0987654321ZXCVBNMLKJHGFDSAQWERTYUIOP';
-    var result = '';
-    for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
-    return result;
-}
