@@ -1,23 +1,25 @@
 <!-- views/partials/_header.ejs -->
-<h1>TinyApp</h1>
+<p ALIGN=CENTER>
+    <h1>TinyApp</h1>
+</P>
 <div>
     <p>Just out here sacrificing URLs to the Red God</p>
 </div>
 <% if (username) { %>
-<h1> Valar Morghulis
+<h1> Valar Morghulis,
     <%=username%>
 </h1>
 <form method="POST" action="/logout">
     <a href="#">
-        <button type=" submit" class="btn btn-warning">LOGOUT</button>
+        <button type="submit" class="btn btn-warning">LOGOUT</button>
     </a>
 </form>
 <% } else{ %>
 <form method="POST" action="/login">
-    <h1> Speak a name and the man will do the rest </h1>
+    <h1> Speak a (user)name and the man will do the rest </h1>
     <input type="text" name="username">
     <a href="#">
-        <button type=" submit" class="btn btn-warning">LOGIN</button>
+        <button type="submit" class="btn btn-warning">LOGIN</button>
     </a>
     <% } %>
 </form>

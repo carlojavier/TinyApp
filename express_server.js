@@ -24,10 +24,9 @@ const urlDatabase = {
 app.get("/urls", (request, response) => {
     const templateVars = {
         urls: urlDatabase,
-        username: request.cookies.username
+        username: request.cookies["username"]
     };
     response.render("urls_index", templateVars);
-    console.log(request.cookies)
 });
 
 // GET route to show the submission form
@@ -44,7 +43,7 @@ app.post("/urls", (request, response) => {
 });
 
 app.get("/urls/new", (request, response) => {
-    let templateVars = { username: request.cookies.username };
+    let templateVars = { username: request.cookies["username"] };
     response.render("urls_new");
 });
 
@@ -75,15 +74,14 @@ app.post("/urls/:shortURL/delete", (request, response) => {
 app.post("/login", (request, response) => {
     const name = request.body.username;
     response.cookie('username', name);
-    response.redirect('/urls'); // do i need this here
+    response.redirect('/urls');
 });
 
 app.post("/logout", (request, response) => {
     const name = request.body.username;
-    response.clearCookie('username', );
+    response.clearCookie('username', name);
     response.redirect('/urls')
 })
-
 
 app.listen(PORT, () => {
     console.log(`Sample app listening on port ${PORT}!`);
