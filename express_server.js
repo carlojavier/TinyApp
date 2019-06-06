@@ -31,7 +31,7 @@ app.get("/urls", (request, response) => {
 
 // GET route to show the submission form
 app.get("/u/:shortURL", (request, response) => {
-    let longURL = request.params.shortURL
+    const longURL = request.params.shortURL
     response.redirect(urlDatabase[longURL]);
 });
 
@@ -43,14 +43,18 @@ app.post("/urls", (request, response) => {
 });
 
 app.get("/urls/new", (request, response) => {
-    let templateVars = { username: request.cookies["username"] };
-    response.render("urls_new");
+    const templateVars = { username: request.cookies["username"] };
+    response.render("urls_new", templateVars);
 });
 
 // GET route to render short URL
 app.get("/urls/:shortURL", (request, response) => {
     const shortURL = request.params.shortURL
-    let templateVars = { shortURL: shortURL, longURL: urlDatabase[shortURL], username: request.cookies.username };
+    const templateVars = {
+        shortURL: shortURL,
+        longURL: urlDatabase[shortURL],
+        username: request.cookies["username"]
+    };
     response.render("urls_show", templateVars);
 });
 
