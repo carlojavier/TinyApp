@@ -18,12 +18,13 @@
     <ul>
         <% for (let url in urls) { %>
         <li>
-            <form method="POST" action="/urls/9sm5xK/delete">
-                <%= url %> :
-                <%= urls[url] %>
-                <edit>
+            <a href="#">
+                <form method="POST" action="/urls/9sm5xK/delete">
+                    <%= url %> :
+                    <%= urls[url] %>
                     <button type="button" class="btn btn-warning">DELETE</button>
-            </form>
+                </form>
+            </a>
         </li>
         <% }; %>
     </ul>

@@ -18,10 +18,10 @@
     <h2>
         <%= shortURL %>
     </h2>
-    <form method="POST" action="/urls/9sm5xK/delete">
+    <form method="POST" action="/urls/<%= shortURL %>">
         <label for="id">URL</label>
-        <input type="text" name="<%= longURL %>" id="id">
-        <button type="button" class="btn btn-warning">UPDATE</button>
+        <input type="text" name="longURL" id="id">
+        <button type="submit" class="btn btn-warning">UPDATE</button>
     </form>
     </a>
 </body>

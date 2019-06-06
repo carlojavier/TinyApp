@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080;
 const morgan = require('morgan');
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 
 // set view engine to ejs
 app.set("view engine", "ejs");
@@ -10,6 +11,8 @@ app.set("view engine", "ejs");
 app.use(morgan('dev'));
 // set up middleware
 app.use(bodyParser.urlencoded({ extended: true }));
+// set up cookie-parser
+app.use(cookieParser());
 
 // set urlDatabase
 const urlDatabase = {
@@ -47,12 +50,13 @@ app.get("/urls/:shortURL", (request, response) => {
     response.render("urls_show", templateVars);
 });
 
-// another POST route to receive submit function
-app.post("urls/:shortURL/", (request, response) => {
+// another POST route to receive submit function, i think this one is messed
+app.post("/urls/:shortURL/", (request, response) => {
+    console.log(request.params)
     const newURL = request.body.longURL;
-    const id = request.params.longURL;
+    const id = request.params.shortURL;
     if (newURL) {
-        urls[id] = newURL;
+        urlDatabase[id] = newURL;
     }
     response.redirect(`/urls/${id}`);
     console.log(newURL)
@@ -63,6 +67,11 @@ app.post("/urls/:shortURL/delete", (request, response) => {
     response.redirect('/urls');
 });
 
+app.post("/login", (request, response) => {
+    const name = request.body.username;
+    response.cookie('username', name);
+    response.redirect('/urls'); // do i need this here
+});
 
 app.listen(PORT, () => {
     console.log(`Sample app listening on port ${PORT}!`);
