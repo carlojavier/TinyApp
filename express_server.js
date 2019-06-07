@@ -53,17 +53,37 @@ function doesEmailExistInDatabase(email) {
     return exists
 }
 
+function createTemplatVars(userID) {
+    if (users[userID]) {
+        let currentUser = users[userID]
+        const templateVars = {
+            urls: urlDatabase,
+            currentUser: currentUser
+        };
+        return templateVars
+    } else {
+        const templateVars = {
+            urls: urlDatabase,
+            currentUser: {}
+        };
+        return templateVars
+    }
+
+}
+
 app.get("/register", (request, response) => {
-    const templateVars = {
-        urls: urlDatabase,
-        username: request.cookies.username
-    };
+    // const templateVars = {
+    //     urls: urlDatabase,
+    //     username: request.cookies.username
+    // };
+    const templateVars = createTemplatVars(request.cookies.UserID);
     response.render("urls_register", templateVars);
 
 });
 
 app.post("/register", (request, response) => {
     const newUserID = generateRandomString();
+    console.log(request.body)
     const newUser = {
         id: newUserID,
         email: request.body.email,
@@ -71,9 +91,9 @@ app.post("/register", (request, response) => {
     };
     console.log(newUser);
     if (newUser.email === "" || newUser.password === "") {
-        response.status(400).send("Not today");
+        response.status(400).send("What do we say to the God of cutting URLs? Not today");
     } else if (doesEmailExistInDatabase(newUser.email)) {
-        response.status(400).send("Looks like you've been here before")
+        response.status(400).send("lol get your own email")
     } else {
         users[newUserID] = newUser;
         response.cookie("UserID", newUserID);
@@ -83,10 +103,13 @@ app.post("/register", (request, response) => {
 
 // route to index
 app.get("/urls", (request, response) => {
-    const templateVars = {
-        urls: urlDatabase,
-        username: request.cookies["username"]
-    };
+    // let currentUser = users[request.cookies.UserID]
+    // const templateVars = {
+    //     urls: urlDatabase,
+    //     currentUser: currentUser
+    // };
+    const templateVars = createTemplatVars(request.cookies.UserID);
+    console.log(templateVars)
     response.render("urls_index", templateVars);
 });
 
@@ -104,18 +127,22 @@ app.post("/urls", (request, response) => {
 });
 
 app.get("/urls/new", (request, response) => {
-    const templateVars = { username: request.cookies["username"] };
+    // const templateVars = { username: request.cookies["username"] };
+    const templateVars = createTemplatVars(request.cookies.UserID);
     response.render("urls_new", templateVars);
 });
 
 // GET route to render short URL
 app.get("/urls/:shortURL", (request, response) => {
     const shortURL = request.params.shortURL
-    const templateVars = {
-        shortURL: shortURL,
-        longURL: urlDatabase[shortURL],
-        username: request.cookies["username"]
-    };
+    // const templateVars = {
+    //     shortURL: shortURL,
+    //     longURL: urlDatabase[shortURL],
+    //     username: request.cookies["username"]
+    // };
+    let templateVars = createTemplatVars(request.cookies.UserID);
+    templateVars["shortURL"] = shortURL;
+    templateVars["longURL"] = urlDatabase[shortURL];
     response.render("urls_show", templateVars);
 });
 

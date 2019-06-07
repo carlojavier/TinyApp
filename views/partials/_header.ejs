@@ -7,9 +7,9 @@
 <div>
     <p>Just out here sacrificing URLs to the Red God</p>
 </div>
-<% if (username) { %>
+<% if (currentUser.email) { %>
 <h1> Valar Morghulis,
-    <%=username%>
+    <%=currentUser.email%>
 </h1>
 <form method="POST" action="/logout">
     <a href="#">
