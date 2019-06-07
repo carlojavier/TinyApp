@@ -22,7 +22,6 @@ function generateRandomString() {
     return result;
 }
 
-
 // set urlDatabase
 const urlDatabase = {
     "b2xVn2": "http://www.lighthouselabs.ca",
@@ -53,7 +52,7 @@ function doesEmailExistInDatabase(email) {
     return exists
 }
 
-function createTemplatVars(userID) {
+function createTemplateVars(userID) {
     if (users[userID]) {
         let currentUser = users[userID]
         const templateVars = {
@@ -68,7 +67,15 @@ function createTemplatVars(userID) {
         };
         return templateVars
     }
+}
 
+function checkUser(email, password) {
+    for (var key in users) {
+        if (users[key].email === email && users[key].password === password) {
+            return users[key];
+        }
+    }
+    return false;
 }
 
 app.get("/register", (request, response) => {
@@ -76,7 +83,7 @@ app.get("/register", (request, response) => {
     //     urls: urlDatabase,
     //     username: request.cookies.username
     // };
-    const templateVars = createTemplatVars(request.cookies.UserID);
+    const templateVars = createTemplateVars(request.cookies.UserID);
     response.render("urls_register", templateVars);
 
 });
@@ -108,7 +115,7 @@ app.get("/urls", (request, response) => {
     //     urls: urlDatabase,
     //     currentUser: currentUser
     // };
-    const templateVars = createTemplatVars(request.cookies.UserID);
+    const templateVars = createTemplateVars(request.cookies.UserID);
     console.log(templateVars)
     response.render("urls_index", templateVars);
 });
@@ -119,16 +126,17 @@ app.get("/u/:shortURL", (request, response) => {
     response.redirect(urlDatabase[longURL]);
 });
 
-// POST route to receive form
-app.post("/urls", (request, response) => {
-    const shortURL = generateRandomString();
-    urlDatabase[shortURL] = request.body.longURL
-    response.redirect(`/urls/${shortURL}`);
+app.get("/login", (request, response) => {
+    response.render("urls_login");
 });
+
+app.get("/logout", (request, response) => {
+    response.render("urls_new");
+})
 
 app.get("/urls/new", (request, response) => {
     // const templateVars = { username: request.cookies["username"] };
-    const templateVars = createTemplatVars(request.cookies.UserID);
+    const templateVars = createTemplateVars(request.cookies.UserID);
     response.render("urls_new", templateVars);
 });
 
@@ -140,10 +148,17 @@ app.get("/urls/:shortURL", (request, response) => {
     //     longURL: urlDatabase[shortURL],
     //     username: request.cookies["username"]
     // };
-    let templateVars = createTemplatVars(request.cookies.UserID);
+    let templateVars = createTemplateVars(request.cookies.UserID);
     templateVars["shortURL"] = shortURL;
     templateVars["longURL"] = urlDatabase[shortURL];
     response.render("urls_show", templateVars);
+});
+
+// POST route to receive form
+app.post("/urls", (request, response) => {
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = request.body.longURL
+    response.redirect(`/urls/${shortURL}`);
 });
 
 // another POST route to receive submit function, i think this one is messed
@@ -159,20 +174,34 @@ app.post("/urls/:shortURL/", (request, response) => {
 });
 
 app.post("/urls/:shortURL/delete", (request, response) => {
-    delete urlDatabase[request.params.longURL];
+    delete urlDatabase[request.params.shortURL];
     response.redirect('/urls');
 });
 
 
 app.post("/login", (request, response) => {
-    const name = request.body.username;
-    response.cookie('username', name);
-    response.redirect('/urls');
+    // const name = request.body.username;
+    // response.cookie('username', name);
+    const userResult = checkUser(request.body.email, request.body.password)
+    if (userResult) {
+        response.cookie("user_id", userResult.id)
+        response.redirect('/urls');
+    } else {
+        response.status(403).send("haha its not here");
+    }
+
 });
 
 app.post("/logout", (request, response) => {
-    const name = request.body.username;
-    response.clearCookie('username', name);
+    // const name = request.body.username;
+    // response.clearCookie('username', name);
+    const templateVars = createTemplateVars(request.cookies.UserID);
+    if (!templateVars) {
+        response.status(403).send("Not for you to see")
+    } else if (templateVars) {
+
+    }
+    console.log(templateVars)
     response.redirect('/urls')
 })
 
