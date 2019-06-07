@@ -23,13 +23,12 @@
                     <%= url %> -->
                     <%= urls[url].longURL %>
                 </form>
-            </a href="#">
-            <span>EDIT
-            </span>
-            </a>
-            <form method="POST" action="/urls/<%= url %>/delete">
-                <button type="submit" class="btn btn-warning">DELETE</button>
-            </form>
+                <a href="/urls/:shortURL">
+                    <button type="submit" class="btn btn-warning">EDIT</button>
+                </a>
+                <form method="POST" action="/urls/<%= url %>/delete">
+                    <button type="submit" class="btn btn-warning">DELETE</button>
+                </form>
         </li>
         <% }; %>
     </ul>

@@ -14,14 +14,13 @@
         <% include ../views/partials/_header.ejs  %>
     </header>
     <!-- THIS IS WHERE THE EJS CODE WILL GO -->
-    <h1>My URLs</h1>
-    <h2>
+    <h1>shortURL:
         <%= shortURL %>
-    </h2>
+    </h1>
     <form method="POST" action="/urls/<%= shortURL %>">
         <label for="id">URL</label>
         <input type="text" name="longURL" id="id">
-        <button type="submit" class="btn btn-warning">DELETE</button>
+        <button type="submit" class="btn btn-warning">UPDATE</button>
     </form>
     </a>
 </body>
