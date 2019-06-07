@@ -24,8 +24,8 @@ function generateRandomString() {
 
 // set urlDatabase
 const urlDatabase = {
-    "b2xVn2": "http://www.lighthouselabs.ca",
-    "9sm5xK": "http://www.google.com"
+    "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID" },
+    "9sm5xK": { longURL: "http://www.google.com", userID: "alsoUserRandomID" }
 };
 // set user database
 const users = {
@@ -51,18 +51,25 @@ function doesEmailExistInDatabase(email) {
     }
     return exists
 }
+
+function urlsForUser(userID) {
+    // function will return urls for one user
+
+    return urlDatabase;
+
+}
 // function to go through all handlers and replace username info with userID
 function createTemplateVars(userID) {
     if (users[userID]) {
         let currentUser = users[userID]
         const templateVars = {
-            urls: urlDatabase,
+            urls: urlsForUser(userID),
             currentUser: currentUser
         };
         return templateVars
     } else {
         const templateVars = {
-            urls: urlDatabase,
+            urls: urlsForUser(userID),
             currentUser: {}
         };
         return templateVars
@@ -142,7 +149,13 @@ app.post("/register", (request, response) => {
 
 app.post("/urls", (request, response) => {
     const shortURL = generateRandomString();
-    urlDatabase[shortURL] = request.body.longURL
+    const newURL = request.body.longURL;
+
+    // urlDatabase[shortURL] = request.body.longURL
+    if (newURL) {
+        urlDatabase[shortURL] = { longURL: newURL, userID: request.cookies.userID };
+        console.log("added")
+    }
     response.redirect(`/urls/${shortURL}`);
 });
 
@@ -151,8 +164,11 @@ app.post("/urls/:shortURL/", (request, response) => {
     const newURL = request.body.longURL;
     const id = request.params.shortURL;
     if (newURL) {
-        urlDatabase[id] = newURL;
+        urlDatabase[id] = { longURL: newURL, userID: request.cookies.userID };
+        console.log("added")
     }
+    console.log(urlDatabase)
+
     response.redirect(`/urls/${id}`);
     console.log(newURL)
 });
