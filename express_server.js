@@ -103,6 +103,11 @@ app.get("/logout", (request, response) => {
 })
 
 app.get("/urls/new", (request, response) => {
+    if (!request.cookies.UserID) {
+        response.status(403)
+        response.redirect("/urls")
+        return
+    }
     const templateVars = createTemplateVars(request.cookies.UserID);
     response.render("urls_new", templateVars);
 });
