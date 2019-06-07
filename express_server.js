@@ -69,12 +69,16 @@ app.post("/register", (request, response) => {
         email: request.body.email,
         password: request.body.password
     };
-    if (newUser.email === "" || newUser.password === "")
+    console.log(newUser);
+    if (newUser.email === "" || newUser.password === "") {
         response.status(400).send("Not today");
-    if (doesEmailExistInDatabase(newUser.email));
-    response.status(400).send("Looks like you've been here before")
-    response.cookie("UserID", newUserID);
-    response.redirect("/urls");
+    } else if (doesEmailExistInDatabase(newUser.email)) {
+        response.status(400).send("Looks like you've been here before")
+    } else {
+        users[newUserID] = newUser;
+        response.cookie("UserID", newUserID);
+        response.redirect("/urls");
+    }
 });
 
 // route to index
