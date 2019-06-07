@@ -66,9 +66,6 @@ function urlsForUser(userID) {
     return usersURL;
 }
 
-
-
-
 // function to go through all handlers and replace username info with userID
 function createTemplateVars(userID) {
     if (users[userID]) {
@@ -161,8 +158,6 @@ app.post("/register", (request, response) => {
 app.post("/urls", (request, response) => {
     const shortURL = generateRandomString();
     const newURL = request.body.longURL;
-
-    // urlDatabase[shortURL] = request.body.longURL
     if (newURL) {
         urlDatabase[shortURL] = { longURL: newURL, userID: request.cookies.UserID };
         console.log("added")
@@ -171,12 +166,15 @@ app.post("/urls", (request, response) => {
 });
 
 app.post("/urls/:shortURL/", (request, response) => {
+    if (!request.cookies.UserID) {
+        response.redirect("/urls");
+        return
+    }
     console.log(request.params)
     const newURL = request.body.longURL;
     const id = request.params.shortURL;
     if (newURL) {
         urlDatabase[id] = { longURL: newURL, userID: request.cookies.UserID };
-        console.log("added")
     }
     console.log(urlDatabase)
 
