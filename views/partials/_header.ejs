@@ -5,26 +5,7 @@
     </p>
     <div>
         <p>Just out here sacrificing URLs to the Red God</p>
+        <a href="/register"><button type="submit" class="btn btn-warning">REGISTER</button></a>
+        <a href="/login"><button type="submit" class="btn btn-warning">LOGIN</button></a>
     </div>
-    <% if (currentUser.email) { %>
-    <h1> Valar Morghulis,
-        <%=currentUser.email%>
-    </h1>
-    <form method="POST" action="/logout">
-        <a href="#">
-            <button type="submit" class="btn btn-warning">LOGOUT</button>
-        </a>
-    </form>
-    <% } else{ %>
-    <form method="POST" action="/login">
-        <h1> Speak a (user)name and the man will do the rest </h1>
-        <input type="text" name="username">
-        <a href="#">
-            <button type="submit" class="btn btn-warning">LOGIN</button>
-        </a>
-        <% } %>
-    </form>
-    </div>
-    </div>
-    </nav>
 </header>
