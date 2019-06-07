@@ -27,7 +27,7 @@ const urlDatabase = {
     "b2xVn2": "http://www.lighthouselabs.ca",
     "9sm5xK": "http://www.google.com"
 };
-
+// set user database
 const users = {
     "userRandomID": {
         id: "userRandomID",
@@ -41,7 +41,7 @@ const users = {
         password: "also-something-important-idk"
     }
 }
-
+// fuction that goes through email sign up sheet
 function doesEmailExistInDatabase(email) {
     let exists = false
     for (var key in users) {
@@ -51,7 +51,7 @@ function doesEmailExistInDatabase(email) {
     }
     return exists
 }
-
+// function to go through all handlers and replace username info with userID
 function createTemplateVars(userID) {
     if (users[userID]) {
         let currentUser = users[userID]
@@ -68,7 +68,7 @@ function createTemplateVars(userID) {
         return templateVars
     }
 }
-
+// function to enforce conditional on existing emails and passwords
 function checkUser(email, password) {
     for (var key in users) {
         if (users[key].email === email && users[key].password === password) {
@@ -79,13 +79,40 @@ function checkUser(email, password) {
 }
 
 app.get("/register", (request, response) => {
-    // const templateVars = {
-    //     urls: urlDatabase,
-    //     username: request.cookies.username
-    // };
     const templateVars = createTemplateVars(request.cookies.UserID);
     response.render("urls_register", templateVars);
+});
 
+app.get("/urls", (request, response) => {
+    const templateVars = createTemplateVars(request.cookies.UserID);
+    console.log(templateVars)
+    response.render("urls_index", templateVars);
+});
+
+app.get("/u/:shortURL", (request, response) => {
+    const longURL = request.params.shortURL
+    response.redirect(urlDatabase[longURL]);
+});
+
+app.get("/login", (request, response) => {
+    response.render("urls_login");
+});
+
+app.get("/logout", (request, response) => {
+    response.render("urls_new");
+})
+
+app.get("/urls/new", (request, response) => {
+    const templateVars = createTemplateVars(request.cookies.UserID);
+    response.render("urls_new", templateVars);
+});
+
+app.get("/urls/:shortURL", (request, response) => {
+    const shortURL = request.params.shortURL
+    let templateVars = createTemplateVars(request.cookies.UserID);
+    templateVars["shortURL"] = shortURL;
+    templateVars["longURL"] = urlDatabase[shortURL];
+    response.render("urls_show", templateVars);
 });
 
 app.post("/register", (request, response) => {
@@ -108,60 +135,12 @@ app.post("/register", (request, response) => {
     }
 });
 
-// route to index
-app.get("/urls", (request, response) => {
-    // let currentUser = users[request.cookies.UserID]
-    // const templateVars = {
-    //     urls: urlDatabase,
-    //     currentUser: currentUser
-    // };
-    const templateVars = createTemplateVars(request.cookies.UserID);
-    console.log(templateVars)
-    response.render("urls_index", templateVars);
-});
-
-// GET route to show the submission form
-app.get("/u/:shortURL", (request, response) => {
-    const longURL = request.params.shortURL
-    response.redirect(urlDatabase[longURL]);
-});
-
-app.get("/login", (request, response) => {
-    response.render("urls_login");
-});
-
-app.get("/logout", (request, response) => {
-    response.render("urls_new");
-})
-
-app.get("/urls/new", (request, response) => {
-    // const templateVars = { username: request.cookies["username"] };
-    const templateVars = createTemplateVars(request.cookies.UserID);
-    response.render("urls_new", templateVars);
-});
-
-// GET route to render short URL
-app.get("/urls/:shortURL", (request, response) => {
-    const shortURL = request.params.shortURL
-    // const templateVars = {
-    //     shortURL: shortURL,
-    //     longURL: urlDatabase[shortURL],
-    //     username: request.cookies["username"]
-    // };
-    let templateVars = createTemplateVars(request.cookies.UserID);
-    templateVars["shortURL"] = shortURL;
-    templateVars["longURL"] = urlDatabase[shortURL];
-    response.render("urls_show", templateVars);
-});
-
-// POST route to receive form
 app.post("/urls", (request, response) => {
     const shortURL = generateRandomString();
     urlDatabase[shortURL] = request.body.longURL
     response.redirect(`/urls/${shortURL}`);
 });
 
-// another POST route to receive submit function, i think this one is messed
 app.post("/urls/:shortURL/", (request, response) => {
     console.log(request.params)
     const newURL = request.body.longURL;
@@ -180,11 +159,9 @@ app.post("/urls/:shortURL/delete", (request, response) => {
 
 
 app.post("/login", (request, response) => {
-    // const name = request.body.username;
-    // response.cookie('username', name);
     const userResult = checkUser(request.body.email, request.body.password)
     if (userResult) {
-        response.cookie("user_id", userResult.id)
+        response.cookie("UserID", userResult.id)
         response.redirect('/urls');
     } else {
         response.status(403).send("haha its not here");
@@ -193,13 +170,12 @@ app.post("/login", (request, response) => {
 });
 
 app.post("/logout", (request, response) => {
-    // const name = request.body.username;
-    // response.clearCookie('username', name);
     const templateVars = createTemplateVars(request.cookies.UserID);
-    if (!templateVars) {
+    if (!templateVars.currentUser) {
         response.status(403).send("Not for you to see")
     } else if (templateVars) {
-
+        //remove cookies
+        response.cookie("UserID", null);
     }
     console.log(templateVars)
     response.redirect('/urls')
