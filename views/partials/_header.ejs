@@ -5,7 +5,11 @@
     </p>
     <div>
         <p>Just out here sacrificing URLs to the Red God</p>
+        <% if (!currentUser.email) { %>
         <a href="/register"><button type="submit" class="btn btn-warning">REGISTER</button></a>
         <a href="/login"><button type="submit" class="btn btn-warning">LOGIN</button></a>
+        <% }else { %>
+        <a href="/logout"><button type="submit" class="btn btn-warning">LOGOUT</button></a>
+        <% } %>
     </div>
 </header>
