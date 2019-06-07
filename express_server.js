@@ -54,10 +54,21 @@ function doesEmailExistInDatabase(email) {
 
 function urlsForUser(userID) {
     // function will return urls for one user
+    let usersURL = {};
+    for (let key in urlDatabase) {
+        if (urlDatabase[key].userID === userID) {
+            usersURL[key] = urlDatabase[key];
+        }
 
-    return urlDatabase;
-
+    }
+    console.log(userID);
+    console.log(urlDatabase);
+    return usersURL;
 }
+
+
+
+
 // function to go through all handlers and replace username info with userID
 function createTemplateVars(userID) {
     if (users[userID]) {
@@ -153,7 +164,7 @@ app.post("/urls", (request, response) => {
 
     // urlDatabase[shortURL] = request.body.longURL
     if (newURL) {
-        urlDatabase[shortURL] = { longURL: newURL, userID: request.cookies.userID };
+        urlDatabase[shortURL] = { longURL: newURL, userID: request.cookies.UserID };
         console.log("added")
     }
     response.redirect(`/urls/${shortURL}`);
@@ -164,7 +175,7 @@ app.post("/urls/:shortURL/", (request, response) => {
     const newURL = request.body.longURL;
     const id = request.params.shortURL;
     if (newURL) {
-        urlDatabase[id] = { longURL: newURL, userID: request.cookies.userID };
+        urlDatabase[id] = { longURL: newURL, userID: request.cookies.UserID };
         console.log("added")
     }
     console.log(urlDatabase)
