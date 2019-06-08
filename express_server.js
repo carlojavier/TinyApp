@@ -3,7 +3,8 @@ const app = express();
 const PORT = 8080;
 const morgan = require('morgan');
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+const cookieSession = require("cookie-session");
+// const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 
 // set view engine to ejs
@@ -12,8 +13,11 @@ app.set("view engine", "ejs");
 app.use(morgan('dev'));
 // set up middleware
 app.use(bodyParser.urlencoded({ extended: true }));
-// set up cookie-parser
-app.use(cookieParser());
+// set up cookie-session
+app.use(cookieSession({
+    name: "session",
+    keys: ['key1', 'key2']
+}));
 
 function generateRandomString() {
     const length = 5;
@@ -98,12 +102,12 @@ function checkUser(email, password) {
 }
 
 app.get("/register", (request, response) => {
-    const templateVars = createTemplateVars(request.cookies.UserID);
+    const templateVars = createTemplateVars(request.session.UserID);
     response.render("urls_register", templateVars);
 });
 
 app.get("/urls", (request, response) => {
-    const templateVars = createTemplateVars(request.cookies.UserID);
+    const templateVars = createTemplateVars(request.session.UserID);
     console.log(templateVars)
     response.render("urls_index", templateVars);
 });
@@ -122,18 +126,18 @@ app.get("/logout", (request, response) => {
 })
 
 app.get("/urls/new", (request, response) => {
-    if (!request.cookies.UserID) {
+    if (!request.session.UserID) {
         response.status(403).send();
         response.redirect("/urls")
         return
     }
-    const templateVars = createTemplateVars(request.cookies.UserID);
+    const templateVars = createTemplateVars(request.session.UserID);
     response.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (request, response) => {
     const shortURL = request.params.shortURL
-    let templateVars = createTemplateVars(request.cookies.UserID);
+    let templateVars = createTemplateVars(request.session.UserID);
     templateVars["shortURL"] = shortURL;
     templateVars["longURL"] = urlDatabase[shortURL];
     response.render("urls_show", templateVars);
@@ -155,7 +159,7 @@ app.post("/register", (request, response) => {
     } else {
         console.log('new user created:', newUser);
         users[newUserID] = newUser;
-        response.cookie("UserID", newUserID);
+        request.session.UserID = newUserID;
         response.redirect("/urls");
     }
 });
@@ -164,14 +168,14 @@ app.post("/urls", (request, response) => {
     const shortURL = generateRandomString();
     const newURL = request.body.longURL;
     if (newURL) {
-        urlDatabase[shortURL] = { longURL: newURL, userID: request.cookies.UserID };
+        urlDatabase[shortURL] = { longURL: newURL, userID: request.session.UserID };
         console.log("added")
     }
     response.redirect(`/urls/${shortURL}`);
 });
 
 app.post("/urls/:shortURL/", (request, response) => {
-    if (!request.cookies.UserID) {
+    if (!request.session.UserID) {
         response.redirect("/urls");
         return
     }
@@ -179,7 +183,7 @@ app.post("/urls/:shortURL/", (request, response) => {
     const newURL = request.body.longURL;
     const id = request.params.shortURL;
     if (newURL) {
-        urlDatabase[id] = { longURL: newURL, userID: request.cookies.UserID };
+        urlDatabase[id] = { longURL: newURL, userID: request.session.UserID };
     }
     console.log(urlDatabase)
     response.redirect(`/urls/${id}`);
@@ -195,7 +199,7 @@ app.post("/urls/:shortURL/delete", (request, response) => {
 app.post("/login", (request, response) => {
     const userResult = checkUser(request.body.email, request.body.password)
     if (userResult) {
-        response.cookie("UserID", userResult.id)
+        request.session.UserID = userResult.id;
         response.redirect('/urls');
     } else {
         response.status(403).send('Wrong login credentials');
@@ -203,12 +207,11 @@ app.post("/login", (request, response) => {
 });
 
 app.post("/logout", (request, response) => {
-    const templateVars = createTemplateVars(request.cookies.UserID);
+    const templateVars = createTemplateVars(request.session.UserID);
     if (!templateVars.currentUser) {
         response.status(403).send()
     } else if (templateVars) {
-        //remove cookies
-        response.cookie("UserID", null);
+        request.session.UserID = null;
     }
     console.log(templateVars)
     response.redirect('/urls')
