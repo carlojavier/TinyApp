@@ -4,6 +4,7 @@ const PORT = 8080;
 const morgan = require('morgan');
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 
 // set view engine to ejs
 app.set("view engine", "ejs");
@@ -86,7 +87,10 @@ function createTemplateVars(userID) {
 // function to enforce conditional on existing emails and passwords
 function checkUser(email, password) {
     for (var key in users) {
-        if (users[key].email === email && users[key].password === password) {
+        console.log('key:', key);
+        console.log('users[key]:', users[key]);
+        if (users[key].email === email && bcrypt.compareSync(password, users[key].password)) {
+            console.log('user found!');
             return users[key];
         }
     }
@@ -119,7 +123,7 @@ app.get("/logout", (request, response) => {
 
 app.get("/urls/new", (request, response) => {
     if (!request.cookies.UserID) {
-        response.status(403)
+        response.status(403).send();
         response.redirect("/urls")
         return
     }
@@ -136,19 +140,20 @@ app.get("/urls/:shortURL", (request, response) => {
 });
 
 app.post("/register", (request, response) => {
+    const hashedPassword = bcrypt.hashSync(request.body.password, 10);
     const newUserID = generateRandomString();
-    console.log(request.body)
     const newUser = {
         id: newUserID,
         email: request.body.email,
-        password: request.body.password
+        password: hashedPassword
     };
     console.log(newUser);
     if (newUser.email === "" || newUser.password === "") {
-        response.status(400).send("What do we say to the God of cutting URLs? Not today");
+        response.status(400).send()
     } else if (doesEmailExistInDatabase(newUser.email)) {
-        response.status(400).send("lol get your own email")
+        response.status(400).send()
     } else {
+        console.log('new user created:', newUser);
         users[newUserID] = newUser;
         response.cookie("UserID", newUserID);
         response.redirect("/urls");
@@ -177,7 +182,6 @@ app.post("/urls/:shortURL/", (request, response) => {
         urlDatabase[id] = { longURL: newURL, userID: request.cookies.UserID };
     }
     console.log(urlDatabase)
-
     response.redirect(`/urls/${id}`);
     console.log(newURL)
 });
@@ -194,15 +198,14 @@ app.post("/login", (request, response) => {
         response.cookie("UserID", userResult.id)
         response.redirect('/urls');
     } else {
-        response.status(403).send("haha its not here");
+        response.status(403).send('Wrong login credentials');
     }
-
 });
 
 app.post("/logout", (request, response) => {
     const templateVars = createTemplateVars(request.cookies.UserID);
     if (!templateVars.currentUser) {
-        response.status(403).send("Not for you to see")
+        response.status(403).send()
     } else if (templateVars) {
         //remove cookies
         response.cookie("UserID", null);
