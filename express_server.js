@@ -6,32 +6,30 @@ const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const bcrypt = require('bcrypt');
 
-// set view engine to ejs
 app.set("view engine", "ejs");
-// set up morgan
+
 app.use(morgan('dev'));
-// set up middleware
+
 app.use(bodyParser.urlencoded({ extended: true }));
-// set up cookie-session
+
 app.use(cookieSession({
     name: "session",
     keys: ['key1', 'key2']
 }));
 
-// set function to generate random string for url and user ID
 function generateRandomString() {
     const length = 5;
     const chars = 'qwertyuioplkjhgfdsazxcvbnm0987654321ZXCVBNMLKJHGFDSAQWERTYUIOP';
     var result = '';
     for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
     return result;
-}
-// set urlDatabase
+};
+
 const urlDatabase = {
     "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID" },
     "9sm5xK": { longURL: "http://www.google.com", userID: "alsoUserRandomID" }
 };
-// set user database
+
 const users = {
     "userRandomID": {
         id: "userRandomID",
@@ -44,32 +42,28 @@ const users = {
         email: "alsoUser@example.com",
         password: "also-something-important-idk"
     }
-}
-// fuction that goes through email sign up sheet
+};
+
 function doesEmailExistInDatabase(email) {
     let exists = false
     for (var key in users) {
         if (email === users[key].email) {
             exists = true
-        }
-    }
+        };
+    };
     return exists
-}
-// function that ensures every new URL is exclusive to a registered/logged-on user
+};
+
 function urlsForUser(userID) {
     let usersURL = {};
     for (let key in urlDatabase) {
         if (urlDatabase[key].userID === userID) {
             usersURL[key] = urlDatabase[key];
-        }
-
-    }
-    console.log(userID);
-    console.log(urlDatabase);
+        };
+    };
     return usersURL;
-}
+};
 
-// function to go through all handlers and replace username info with userID
 function createTemplateVars(userID) {
     if (users[userID]) {
         let currentUser = users[userID]
@@ -84,9 +78,9 @@ function createTemplateVars(userID) {
             currentUser: {}
         };
         return templateVars
-    }
-}
-// function to enforce conditional on existing emails and passwords
+    };
+};
+
 function checkUser(email, password) {
     for (var key in users) {
         console.log('key:', key);
@@ -94,10 +88,10 @@ function checkUser(email, password) {
         if (users[key].email === email && bcrypt.compareSync(password, users[key].password)) {
             console.log('user found!');
             return users[key];
-        }
-    }
+        };
+    };
     return false;
-}
+};
 
 app.get("/register", (request, response) => {
     const templateVars = createTemplateVars(request.session.UserID);
@@ -128,7 +122,7 @@ app.get("/urls/new", (request, response) => {
         response.status(403).send();
         response.redirect("/urls")
         return
-    }
+    };
     const templateVars = createTemplateVars(request.session.UserID);
     response.render("urls_new", templateVars);
 });
@@ -137,7 +131,6 @@ app.get("/urls/:shortURL", (request, response) => {
     const shortURL = request.params.shortURL
     let templateVars = createTemplateVars(request.session.UserID);
     templateVars["shortURL"] = shortURL;
-    // templateVars["longURL"] = urlDatabase[shortURL].longURL;
     response.render("urls_show", templateVars);
 });
 
@@ -159,7 +152,7 @@ app.post("/register", (request, response) => {
         users[newUserID] = newUser;
         request.session.UserID = newUserID;
         response.redirect("/urls");
-    }
+    };
 });
 
 app.post("/urls", (request, response) => {
@@ -167,8 +160,7 @@ app.post("/urls", (request, response) => {
     const newURL = request.body.longURL;
     if (newURL) {
         urlDatabase[shortURL] = { longURL: newURL, userID: request.session.UserID };
-        console.log("added")
-    }
+    };
     response.redirect(`/urls/${shortURL}`);
 });
 
@@ -176,16 +168,13 @@ app.post("/urls/:shortURL/", (request, response) => {
     if (!request.session.UserID) {
         response.redirect("/urls");
         return
-    }
-    console.log(request.params)
+    };
     const newURL = request.body.longURL;
     const id = request.params.shortURL;
     if (newURL) {
         urlDatabase[id] = { longURL: newURL, userID: request.session.UserID };
-    }
-    console.log(urlDatabase)
+    };
     response.redirect(`/urls/${id}`);
-    console.log(newURL)
 });
 
 app.post("/urls/:shortURL/delete", (request, response) => {
@@ -201,7 +190,7 @@ app.post("/login", (request, response) => {
         response.redirect('/urls');
     } else {
         response.status(403).send('Wrong login credentials');
-    }
+    };
 });
 
 app.post("/logout", (request, response) => {
@@ -210,10 +199,9 @@ app.post("/logout", (request, response) => {
         response.status(403).send()
     } else if (templateVars) {
         request.session.UserID = null;
-    }
-    console.log(templateVars)
+    };
     response.redirect('/urls')
-})
+});
 
 app.listen(PORT, () => {
     console.log(`Sample app listening on port ${PORT}!`);
