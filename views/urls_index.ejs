@@ -14,7 +14,11 @@
         <% include ../views/partials/_header.ejs  %>
     </header>
     <!-- THIS IS WHERE THE EJS CODE WILL GO -->
-    <h2>My URLs</h2>
+    <div>
+        <a href="/urls/new">
+            <h2>Yes, I would very much like to cut some URLs</h2>
+        </a>
+    </div>
     <ul>
         <% for (let url in urls) { %>
         <li>
@@ -23,10 +27,10 @@
                     <%= url %> -->
                     <%= urls[url].longURL %>
                 </form>
-                <a href="/urls/:shortURL">
+                <a href="/urls/<%= url %>">
                     <button type="submit" class="btn btn-warning">EDIT</button>
                 </a>
-                <form method="POST" action="/urls">
+                <form method="POST" action="/urls/<%= url %>/delete">
                     <button type="submit" class="btn btn-warning">DELETE</button>
                 </form>
         </li>

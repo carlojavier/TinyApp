@@ -4,7 +4,6 @@ const PORT = 8080;
 const morgan = require('morgan');
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
-// const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 
 // set view engine to ejs
@@ -19,6 +18,7 @@ app.use(cookieSession({
     keys: ['key1', 'key2']
 }));
 
+// set function to generate random string for url and user ID
 function generateRandomString() {
     const length = 5;
     const chars = 'qwertyuioplkjhgfdsazxcvbnm0987654321ZXCVBNMLKJHGFDSAQWERTYUIOP';
@@ -26,7 +26,6 @@ function generateRandomString() {
     for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
     return result;
 }
-
 // set urlDatabase
 const urlDatabase = {
     "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID" },
@@ -56,9 +55,8 @@ function doesEmailExistInDatabase(email) {
     }
     return exists
 }
-
+// function that ensures every new URL is exclusive to a registered/logged-on user
 function urlsForUser(userID) {
-    // function will return urls for one user
     let usersURL = {};
     for (let key in urlDatabase) {
         if (urlDatabase[key].userID === userID) {
@@ -113,8 +111,8 @@ app.get("/urls", (request, response) => {
 });
 
 app.get("/u/:shortURL", (request, response) => {
-    const longURL = request.params.shortURL
-    response.redirect(urlDatabase[longURL]);
+    const shortURL = request.params.shortURL
+    response.redirect(urlDatabase[shortURL].longURL);
 });
 
 app.get("/login", (request, response) => {
@@ -139,7 +137,7 @@ app.get("/urls/:shortURL", (request, response) => {
     const shortURL = request.params.shortURL
     let templateVars = createTemplateVars(request.session.UserID);
     templateVars["shortURL"] = shortURL;
-    templateVars["longURL"] = urlDatabase[shortURL];
+    // templateVars["longURL"] = urlDatabase[shortURL].longURL;
     response.render("urls_show", templateVars);
 });
 
