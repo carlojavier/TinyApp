@@ -28,3 +28,6 @@ A rustic, full stack web application built with Node and Express that enables UR
 
 _I was a young man once._ Work on this app feels like it started long ago, when it was actually just this past Tuesday. Gah!
 
+This is only the beginning.
+
+Get better every day braaaapp
