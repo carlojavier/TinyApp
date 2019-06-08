@@ -12,7 +12,7 @@ A rustic, full stack web application built with Node and Express that enables UR
 
 !["Screenshot of the Main Page pre-registry"](https://github.com/carlojavier/project_week2/blob/master/TinyApp_MainURLsPage.png?raw=true)
 !["Screenshot of the URLs Page with a shortened link"](https://github.com/carlojavier/project_week2/blob/master/TinyApp_ShortLink.png?raw=true)
-!["Also a screenshot, but of the registry page"] (https://github.com/carlojavier/project_week2/blob/master/TinyApp_RegistryPage.png?raw=true)
+!["Also a screenshot, but of the registry page"](https://github.com/carlojavier/project_week2/blob/master/TinyApp_RegistryPage.png?raw=true)
 
 ## Dependancies
 
