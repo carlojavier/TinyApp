@@ -83,15 +83,20 @@ function createTemplateVars(userID) {
 
 function checkUser(email, password) {
     for (var key in users) {
-        console.log('key:', key);
-        console.log('users[key]:', users[key]);
         if (users[key].email === email && bcrypt.compareSync(password, users[key].password)) {
-            console.log('user found!');
             return users[key];
         };
     };
     return false;
 };
+
+app.get("/", (request, response) => {
+    if (request.session.UserID) {
+        response.redirect("/urls");
+    } else if (!request.session.UserID) {
+        response.redirect("/login");
+    }
+})
 
 app.get("/register", (request, response) => {
     const templateVars = createTemplateVars(request.session.UserID);
@@ -133,6 +138,7 @@ app.get("/urls/:shortURL", (request, response) => {
     templateVars["shortURL"] = shortURL;
     response.render("urls_show", templateVars);
 });
+
 
 app.post("/register", (request, response) => {
     const hashedPassword = bcrypt.hashSync(request.body.password, 10);
@@ -189,7 +195,7 @@ app.post("/login", (request, response) => {
         request.session.UserID = userResult.id;
         response.redirect('/urls');
     } else {
-        response.status(403).send('Wrong login credentials');
+        response.status(403).send('Forbidden');
     };
 });
 
