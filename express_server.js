@@ -134,9 +134,17 @@ app.get("/urls/new", (request, response) => {
 
 app.get("/urls/:shortURL", (request, response) => {
     const shortURL = request.params.shortURL
-    let templateVars = createTemplateVars(request.session.UserID);
-    templateVars["shortURL"] = shortURL;
-    response.render("urls_show", templateVars);
+    if (urlDatabase[shortURL]) {
+        let templateVars = createTemplateVars(request.session.UserID);
+        templateVars["shortURL"] = shortURL;
+        if (templateVars.currentUser.id !== null) {
+            response.render("urls_show", templateVars);
+        } else {
+            response.status(403).send("wrong!")
+        }
+    } else {
+        response.status(403).send("wrong!")
+    }
 });
 
 
