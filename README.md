@@ -1,10 +1,10 @@
-# TinyApp Project (whaaaat...!)
+# TinyApp Project
 
 A rustic, full stack web application built with Node and Express that enables URL-shortening.
 
 ## The Goal
 
-~~To do well in the bootcamp~~ To exhibit progress in many aspects of full stack web development, especially my understanding of JavaScript, EJS, Node, and HTTP.
+To exhibit progress in many aspects of full stack web development, especially my understanding of JavaScript, EJS, Node, and HTTP.
 
 ## Final Product
 
@@ -30,4 +30,4 @@ _I was a young man once._ Work on this app feels like it started long ago, when 
 
 This is only the beginning.
 
-Get better every day braaaapp
+Get better every day.
