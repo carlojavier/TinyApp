@@ -140,10 +140,10 @@ app.get("/urls/:shortURL", (request, response) => {
         if (templateVars.currentUser.id !== null) {
             response.render("urls_show", templateVars);
         } else {
-            response.status(403).send("wrong!")
+            response.status(403).send();
         }
     } else {
-        response.status(403).send("wrong!")
+        response.status(403).send();
     }
 });
 
@@ -188,7 +188,7 @@ app.post("/urls/:shortURL/", (request, response) => {
     if (newURL) {
         urlDatabase[id] = { longURL: newURL, userID: request.session.UserID };
     };
-    response.redirect(`/urls/${id}`);
+    response.redirect(`/urls/`);
 });
 
 app.post("/urls/:shortURL/delete", (request, response) => {
