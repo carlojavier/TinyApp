@@ -1,6 +1,6 @@
 # TinyApp Project
 
-A rustic, full stack web application built with Node and Express that enables URL-shortening.
+A rustic simple web application built with Node and Express that enables URL-shortening.
 
 ## The Goal
 
