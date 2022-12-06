@@ -19,11 +19,11 @@
   "homepage": "https://github.com/carlojavier/project_week2#readme",
   "dependencies": {
     "bcrypt": "2.0.0",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.1",
     "cookie-parser": "^1.4.4",
     "cookie-session": "^1.3.3",
     "ejs": "^2.6.1",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "morgan": "^1.9.1"
   },
   "devDependencies": {
